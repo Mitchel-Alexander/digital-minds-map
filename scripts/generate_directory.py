@@ -271,8 +271,8 @@ body {{ font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; backgro
 .card-header-left {{ flex:1; min-width:0; }}
 .card-name {{ font-size:13px; font-weight:600; color:var(--text); line-height:1.3; letter-spacing:-0.01em; }}
 .card-sublabel {{ font-size:10px; font-weight:500; letter-spacing:.06em; text-transform:uppercase; color:var(--card-accent,var(--faint)); margin-top:3px; }}
-.logo {{ width:34px; height:34px; flex-shrink:0; object-fit:contain; opacity:.9; }}
-.logo-placeholder {{ width:34px; height:34px; flex-shrink:0; }}
+.logo {{ width:68px; height:68px; flex-shrink:0; object-fit:contain; opacity:.9; }}
+.logo-placeholder {{ width:68px; height:68px; flex-shrink:0; }}
 
 .card-meta {{ font-size:11px; color:var(--muted); display:flex; align-items:center; gap:6px; flex-wrap:wrap; }}
 .type-badge {{
