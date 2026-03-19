@@ -108,9 +108,14 @@ ZONES = [
     ('ai-lab-programs',          'AI Lab Programmes',
      'Internal research programmes within frontier AI labs working on consciousness, model welfare, '
      'or interpretability with direct relevance to questions of AI sentience.'),
+    ('ethics-law-moral-status',  'Ethics, Law & Moral Status',
+     'Research groups and organisations whose primary contribution is normative, legal, or philosophical '
+     'analysis of AI moral status, personhood, and legal standing. Eligibility requires published work '
+     'directly engaging AI consciousness, sentience, or moral status.'),
     ('policy-governance',        'Policy & Governance',
-     'Think tanks, government bodies, and policy organisations engaging with digital minds '
-     'questions in regulatory and governance contexts.'),
+     'Government bodies, regulatory agencies, and governance-focused organisations engaging with '
+     'digital minds questions in policy and regulatory contexts. Distinct from normative scholarship: '
+     'this zone covers institutions with formal or quasi-formal governance roles.'),
 ]
 
 SUBGROUPS = [
@@ -145,7 +150,8 @@ tab_rows_html += '    <div class="tab-row">\n'
 tab_rows_html += '      <span class="tab-row-label">Research</span>\n'
 for filt, label, _ in ZONES:
     active = ' active' if filt == 'ai-consciousness-welfare' else ''
-    tab_rows_html += f'      <span class="zone-tab{active}" data-filter="{filt}">{label}</span>\n'
+    escaped_label = label.replace('&', '&amp;')
+    tab_rows_html += f'      <span class="zone-tab{active}" data-filter="{filt}">{escaped_label}</span>\n'
 tab_rows_html += '    </div>\n'
 
 # Field Support row
@@ -170,7 +176,7 @@ HTML = f"""<!DOCTYPE html>
   --bg:#f0f4f8; --surface:#ffffff; --border:#d6e0ea;
   --text:#0f1f2e; --muted:#4a6070; --faint:#8fa4b8;
   --z1:#1d6fa4; --z2:#4a6fa5; --z3:#1a5f7a;
-  --z4:#5a7fa0; --z5:#2d4a6b; --z6:#1e3a5f;
+  --z4:#5a7fa0; --z5:#2d4a6b; --z6:#1e3a5f; --z7:#4a5a72;
   --sg-funders:#1d5c9a; --sg-onboarding:#1a7060; --sg-journals:#4a5a9a; --sg-media:#607a90;
 }}
 body {{ font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; background:var(--bg); color:var(--text); font-size:13px; line-height:1.5; -webkit-font-smoothing:antialiased; }}
@@ -211,6 +217,7 @@ body {{ font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; backgro
 .zone-tab[data-filter="ai-consciousness-welfare"].active {{ border-bottom-color:var(--z3); color:var(--z3); }}
 .zone-tab[data-filter="animal-sentience"].active         {{ border-bottom-color:var(--z4); color:var(--z4); }}
 .zone-tab[data-filter="ai-lab-programs"].active          {{ border-bottom-color:var(--z5); color:var(--z5); }}
+.zone-tab[data-filter="ethics-law-moral-status"].active  {{ border-bottom-color:var(--z7); color:var(--z7); }}
 .zone-tab[data-filter="policy-governance"].active        {{ border-bottom-color:var(--z6); color:var(--z6); }}
 .zone-tab[data-filter="funders"].active     {{ border-bottom-color:var(--sg-funders);    color:var(--sg-funders); }}
 .zone-tab[data-filter="onboarding"].active  {{ border-bottom-color:var(--sg-onboarding); color:var(--sg-onboarding); }}
@@ -255,6 +262,7 @@ body {{ font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; backgro
 .card[data-zone="ai-consciousness-welfare"] {{ --card-accent:var(--z3); }}
 .card[data-zone="animal-sentience"]         {{ --card-accent:var(--z4); }}
 .card[data-zone="ai-lab-programs"]          {{ --card-accent:var(--z5); }}
+.card[data-zone="ethics-law-moral-status"]  {{ --card-accent:var(--z7); }}
 .card[data-zone="policy-governance"]        {{ --card-accent:var(--z6); }}
 .card[data-subgroup="funders"]       {{ --card-accent:var(--sg-funders); }}
 .card[data-subgroup="onboarding"]    {{ --card-accent:var(--sg-onboarding); }}
