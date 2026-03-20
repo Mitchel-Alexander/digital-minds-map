@@ -131,9 +131,6 @@ ZONES = [
     ('philosophy-of-mind',       'Philosophy of Mind',
      'Academic philosophers working on consciousness, phenomenology, and the nature of mind, '
      'supplying the conceptual and analytical foundations on which digital minds questions rest.'),
-    ('animal-sentience',         'Animal Sentience',
-     'Organisations studying sentience and welfare in non-human animals. Methods for attributing '
-     'sentience in the absence of verbal report are a close analogue for AI welfare research.'),
     ('ai-lab-programs',          'AI Lab Programmes',
      'Internal research programmes within frontier AI labs working on consciousness, model welfare, '
      'or interpretability with direct relevance to questions of AI sentience.'),
@@ -287,7 +284,6 @@ body {{ font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; backgro
 .zone-tab[data-filter="consciousness-science"].active    {{ border-bottom-color:var(--z1); color:var(--z1); }}
 .zone-tab[data-filter="philosophy-of-mind"].active       {{ border-bottom-color:var(--z2); color:var(--z2); }}
 .zone-tab[data-filter="ai-consciousness-welfare"].active {{ border-bottom-color:var(--z3); color:var(--z3); }}
-.zone-tab[data-filter="animal-sentience"].active         {{ border-bottom-color:var(--z4); color:var(--z4); }}
 .zone-tab[data-filter="ai-lab-programs"].active          {{ border-bottom-color:var(--z5); color:var(--z5); }}
 .zone-tab[data-filter="ethics-law-moral-status"].active  {{ border-bottom-color:var(--z7); color:var(--z7); }}
 .zone-tab[data-filter="policy-governance"].active        {{ border-bottom-color:var(--z6); color:var(--z6); }}
@@ -333,7 +329,6 @@ body {{ font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; backgro
 .card[data-zone="consciousness-science"]    {{ --card-accent:var(--z1); }}
 .card[data-zone="philosophy-of-mind"]       {{ --card-accent:var(--z2); }}
 .card[data-zone="ai-consciousness-welfare"] {{ --card-accent:var(--z3); }}
-.card[data-zone="animal-sentience"]         {{ --card-accent:var(--z4); }}
 .card[data-zone="ai-lab-programs"]          {{ --card-accent:var(--z5); }}
 .card[data-zone="ethics-law-moral-status"]  {{ --card-accent:var(--z7); }}
 .card[data-zone="policy-governance"]        {{ --card-accent:var(--z6); }}
@@ -647,7 +642,7 @@ function openModal(o) {{
 
   const outputsHtml = o.key_outputs
     ? `<div class="modal-section">
-        <div class="modal-section-label">Selected research</div>
+        <div class="modal-section-label">Selected outputs</div>
         <ul class="modal-section-list modal-citations">
           ${{o.key_outputs.split(';').map(s => {{
             const t = s.trim();
