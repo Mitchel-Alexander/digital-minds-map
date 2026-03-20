@@ -148,12 +148,11 @@ body { font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; backgrou
   padding:1px 5px; margin-top:2px;
 }
 
+.card-banner { width:100%; height:75px; object-fit:contain; opacity:.85; margin-bottom:8px; mix-blend-mode:multiply; }
 .card-header { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
 .card-header-left { flex:1; min-width:0; }
 .card-name { font-size:13px; font-weight:600; color:var(--text); line-height:1.3; letter-spacing:-0.01em; }
 .card-sublabel { font-size:10px; font-weight:500; letter-spacing:.06em; text-transform:uppercase; color:var(--card-accent,var(--faint)); margin-top:3px; }
-.logo { width:68px; height:68px; flex-shrink:0; object-fit:contain; opacity:.9; }
-.logo-placeholder { width:68px; height:68px; flex-shrink:0; }
 
 .card-meta { font-size:11px; color:var(--muted); display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
 .type-badge {
@@ -184,7 +183,7 @@ body { font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; backgrou
 .modal-close:hover { color:var(--text); }
 .modal-org-name { font-size:17px; font-weight:600; letter-spacing:-0.02em; color:var(--text); margin-bottom:4px; }
 .modal-zone { font-size:10px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--card-accent,var(--faint)); margin-bottom:16px; }
-.modal-logo { width:48px; height:48px; object-fit:contain; opacity:.9; margin-bottom:12px; display:block; }
+.modal-logo { width:100%; max-width:280px; height:90px; object-fit:contain; opacity:.85; margin-bottom:16px; display:block; mix-blend-mode:multiply; }
 .modal-description { font-size:13px; color:var(--muted); line-height:1.7; font-weight:300; margin-bottom:20px; }
 .modal-meta-table { width:100%; border-collapse:collapse; font-size:12px; }
 .modal-meta-table td { padding:5px 0; vertical-align:top; }
@@ -383,8 +382,8 @@ function buildGrid() {
     if (o.subgroup) card.dataset.subgroup = o.subgroup;
 
     const logoHtml = o.logo_slug
-      ? `<img class="logo" src="logos/${o.logo_slug}.png" alt="${o.name}" onerror="this.style.display='none'">`
-      : `<div class="logo-placeholder"></div>`;
+      ? `<img class="card-banner" src="logos/${o.logo_slug}.png" alt="${o.name}" onerror="this.style.display='none'">`
+      : '';
 
     const zoneLabel = ZONE_LABELS[o.zone] || ZONE_LABELS[o.subgroup] || '';
     const crossBadge = o.zone_secondary
@@ -395,13 +394,13 @@ function buildGrid() {
     const metaText = o.geography ? `<span class="meta-sep">&middot;</span> ${o.geography}` : '';
 
     card.innerHTML = `
+      ${logoHtml}
       <div class="card-header">
         <div class="card-header-left">
           <div class="card-name">${o.name}</div>
           <div class="card-sublabel">${zoneLabel}</div>
           ${crossBadge}
         </div>
-        ${logoHtml}
       </div>
       <div class="card-meta">${typeBadge}${metaText}</div>
       <div class="card-description">${o.description}</div>
