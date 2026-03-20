@@ -47,6 +47,29 @@ def slug(name):
     return s.strip('-')
 
 # ---------------------------------------------------------------------------
+# Geography region mapping
+# ---------------------------------------------------------------------------
+GEO_REGION_MAP = {
+    'USA': 'USA',
+    'UK': 'UK',
+    'France': 'Europe',
+    'Germany': 'Europe',
+    'Netherlands': 'Europe',
+    'Belgium': 'Europe',
+    'Italy': 'Europe',
+    'Switzerland': 'Europe',
+    'Japan': 'Asia-Pacific',
+    'China': 'Asia-Pacific',
+    'Hong Kong': 'Asia-Pacific',
+    'Australia': 'Asia-Pacific',
+    'South Korea': 'Asia-Pacific',
+    'international': 'International',
+}
+
+def geo_region(raw):
+    return GEO_REGION_MAP.get(raw, 'International')
+
+# ---------------------------------------------------------------------------
 # Type label map
 # ---------------------------------------------------------------------------
 TYPE_LABELS = {
@@ -72,6 +95,7 @@ with open(corpus_path) as f:
         zone_sec = row['zone_secondary'].strip()
         sg = subgroup(row)
         logo_slug_val = logo_map.get(name, '')
+        raw_geo = row['geography'].strip()
         orgs.append({
             'name':         name,
             'url':          row['url'].strip(),
@@ -80,13 +104,18 @@ with open(corpus_path) as f:
             'subgroup':     sg,
             'type':         row['org_type'].strip(),
             'type_label':   TYPE_LABELS.get(row['org_type'].strip(), row['org_type'].strip()),
-            'geography':    row['geography'].strip(),
+            'geography':    raw_geo,
+            'geo_region':   geo_region(raw_geo),
             'description':  row['description'].strip(),
             'founding_year': row['founding_year'].strip(),
             'logo_slug':    logo_slug_val,
+            'key_figures':  row.get('key_figures', '').strip(),
+            'key_outputs':  row.get('key_outputs', '').strip(),
         })
 
 orgs.sort(key=lambda o: o['name'].lower())
+
+org_count = len(orgs)
 
 # ---------------------------------------------------------------------------
 # Zone / subgroup metadata
@@ -138,6 +167,14 @@ ZONE_LABELS = {f: label for f, label, _ in ALL_FILTERS}
 ZONE_DESCS  = {f: desc  for f, label, desc in ALL_FILTERS}
 
 # ---------------------------------------------------------------------------
+# Compute zone counts for key findings
+# ---------------------------------------------------------------------------
+zone_counts = {}
+for o in orgs:
+    z = o['zone'] or o['subgroup']
+    zone_counts[z] = zone_counts.get(z, 0) + 1
+
+# ---------------------------------------------------------------------------
 # HTML
 # ---------------------------------------------------------------------------
 orgs_json = json.dumps(orgs, ensure_ascii=False)
@@ -178,13 +215,48 @@ HTML = f"""<!DOCTYPE html>
   --z1:#1d6fa4; --z2:#4a6fa5; --z3:#1a5f7a;
   --z4:#5a7fa0; --z5:#2d4a6b; --z6:#1e3a5f; --z7:#4a5a72;
   --sg-funders:#1d5c9a; --sg-onboarding:#1a7060; --sg-journals:#4a5a9a; --sg-media:#607a90;
+  --accent-warm:#8a5a3a;
 }}
 body {{ font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; background:var(--bg); color:var(--text); font-size:13px; line-height:1.5; -webkit-font-smoothing:antialiased; }}
 
+/* --- Header --- */
 .page-header {{ padding:36px 20px 0; max-width:1600px; margin:0 auto; }}
-.page-header h1 {{ font-size:20px; font-weight:600; letter-spacing:-0.02em; color:var(--text); margin-bottom:4px; }}
-.page-header p {{ font-size:12.5px; color:var(--muted); }}
+.page-header h1 {{ font-size:22px; font-weight:600; letter-spacing:-0.02em; color:var(--text); margin-bottom:2px; }}
+.page-header .subtitle {{ font-size:13px; color:var(--muted); margin-bottom:12px; }}
+.page-header .intro {{ font-size:12.5px; color:var(--muted); line-height:1.7; font-weight:300; max-width:900px; }}
+.page-header .attribution {{ font-size:11px; color:var(--faint); margin-top:8px; }}
+.page-header .attribution a {{ color:var(--z3); text-decoration:none; border-bottom:1px solid transparent; transition:border-color .12s; }}
+.page-header .attribution a:hover {{ border-bottom-color:var(--z3); }}
 
+/* --- Collapsible panels --- */
+.panel-row {{ display:flex; gap:0; max-width:1600px; margin:20px auto 0; padding:0 20px; }}
+.panel {{
+  flex:1; background:var(--surface); border:1px solid var(--border);
+  font-size:12px; line-height:1.7; color:var(--muted); overflow:hidden;
+}}
+.panel:first-child {{ border-right:none; }}
+.panel summary {{
+  cursor:pointer; padding:10px 16px; font-size:11px; font-weight:600;
+  letter-spacing:.06em; text-transform:uppercase; color:var(--text);
+  list-style:none; display:flex; align-items:center; gap:8px;
+  user-select:none; transition:background .12s;
+}}
+.panel summary:hover {{ background:#f7fafd; }}
+.panel summary::before {{
+  content:''; display:inline-block; width:0; height:0;
+  border-left:4px solid var(--faint); border-top:3px solid transparent; border-bottom:3px solid transparent;
+  transition:transform .15s;
+}}
+.panel[open] summary::before {{ transform:rotate(90deg); }}
+.panel summary::-webkit-details-marker {{ display:none; }}
+.panel-body {{ padding:0 16px 14px; font-weight:300; }}
+.panel-body ul {{ margin:0; padding-left:16px; }}
+.panel-body li {{ margin-bottom:6px; }}
+.panel-body li strong {{ font-weight:500; color:var(--text); }}
+.panel-body p {{ margin-bottom:8px; }}
+.panel-body .method-note {{ font-size:11px; color:var(--faint); margin-top:8px; font-style:italic; }}
+
+/* --- Filter bar --- */
 .filter-bar {{ padding:20px 20px 0; max-width:1600px; margin:0 auto; display:flex; flex-direction:column; gap:14px; }}
 .filter-row {{ display:flex; align-items:center; gap:20px; flex-wrap:wrap; }}
 
@@ -241,6 +313,7 @@ body {{ font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; backgro
 }}
 .filter-select:focus {{ border-bottom-color:var(--text); color:var(--text); }}
 
+/* --- Grid & cards --- */
 .grid {{
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
@@ -296,7 +369,7 @@ body {{ font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; backgro
 .card-link:hover {{ color:var(--text); border-bottom-color:var(--border); }}
 .no-results {{ grid-column:1/-1; background:var(--surface); text-align:center; padding:60px; color:var(--faint); font-size:13px; }}
 
-/* Modal */
+/* --- Modal --- */
 .modal-backdrop {{ display:none; position:fixed; inset:0; background:rgba(15,31,46,.45); backdrop-filter:blur(4px); z-index:100; align-items:center; justify-content:center; padding:20px; }}
 .modal-backdrop.open {{ display:flex; }}
 .modal {{
@@ -317,15 +390,78 @@ body {{ font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; backgro
 .modal-meta-table td {{ padding:5px 0; vertical-align:top; }}
 .modal-meta-table td:first-child {{ color:var(--faint); width:110px; font-size:11px; letter-spacing:.03em; }}
 .modal-meta-table td:last-child {{ color:var(--text); }}
+.modal-section {{ margin-top:16px; }}
+.modal-section-label {{ font-size:10px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--faint); margin-bottom:6px; }}
+.modal-section-list {{ list-style:none; padding:0; margin:0; }}
+.modal-section-list li {{ font-size:12px; color:var(--muted); line-height:1.6; font-weight:300; padding:3px 0; }}
+.modal-section-list li strong {{ font-weight:500; color:var(--text); }}
+.modal-section-list a {{ color:var(--z3); text-decoration:none; border-bottom:1px solid transparent; transition:border-color .12s; }}
+.modal-section-list a:hover {{ border-bottom-color:var(--z3); }}
+.modal-section-list li strong a {{ font-weight:500; color:var(--text); border-bottom:1px dotted var(--border); }}
+.modal-section-list li strong a:hover {{ border-bottom-color:var(--text); color:var(--z3); }}
+.modal-citations li {{ font-style:italic; border-bottom:1px solid var(--bg); }}
+.modal-citations li a {{ font-style:italic; }}
+.modal-citations li:last-child {{ border-bottom:none; }}
 .modal-link {{ display:inline-block; margin-top:20px; font-size:12px; color:var(--z3); text-decoration:none; border-bottom:1px solid transparent; transition:border-color .12s; }}
 .modal-link:hover {{ border-bottom-color:var(--z3); }}
+
+/* --- Footer --- */
+.page-footer {{
+  max-width:1600px; margin:0 auto; padding:24px 20px 36px;
+  font-size:11px; color:var(--faint); line-height:1.6;
+  border-top:1px solid var(--border);
+}}
+
+/* --- Responsive --- */
+@media (max-width:700px) {{
+  .panel-row {{ flex-direction:column; }}
+  .panel:first-child {{ border-right:1px solid var(--border); border-bottom:none; }}
+  .tab-row-label {{ width:80px; }}
+  .filter-selects {{ margin-left:0; }}
+}}
 </style>
 </head>
 <body>
 
 <div class="page-header">
   <h1>Digital Minds — Organisation Directory</h1>
-  <p>Field map of organisations active in AI consciousness, AI welfare, and digital minds research. 77 organisations.</p>
+  <p class="subtitle">{org_count} organisations active in AI consciousness, AI welfare, and digital minds research.</p>
+  <p class="intro">
+    This directory maps the organisational actors in the digital minds field &mdash; the interdisciplinary space
+    concerned with whether AI systems might be conscious, sentient, or moral patients, and what follows from that.
+    It covers research centres, university groups, AI lab programmes, funding bodies, training programmes, and
+    community organisations, organised into six research zones and four field-support categories.
+  </p>
+  <p class="attribution">
+    Produced by <strong>PRISM</strong> &mdash; Partnership for Research Into Sentient Machines.
+    Survey date: March 2026. PRISM is itself included in this directory.
+  </p>
+</div>
+
+<div class="panel-row">
+  <details class="panel">
+    <summary>About this map</summary>
+    <div class="panel-body">
+      <p>
+        The corpus was assembled through four systematic search rounds in March 2026, using seed sources
+        (PRISM researcher network, EA Forum, 80,000 Hours, web search) and snowball sampling from included
+        organisations. Each candidate was classified as <strong>included</strong> (explicit digital minds focus),
+        <strong>adjacent</strong> (relevant but outside core boundary), or <strong>excluded</strong> (documented
+        with rationale). Only included organisations appear in this directory.
+      </p>
+      <p>
+        Organisations are assigned to one of six topical zones based on primary research focus, or to a
+        field-support category (funders, training, journals, community). Funding bodies must demonstrate
+        confirmed grantmaking in digital minds research, not merely declared interest. Individual researchers
+        without institutional anchors are excluded.
+      </p>
+      <p class="method-note">
+        Limitations: search conducted primarily in English; non-English-language sources not systematically covered;
+        private companies without public research output may exist below the visibility threshold. The full
+        methodology protocol and decision log are available in the accompanying dataset.
+      </p>
+    </div>
+  </details>
 </div>
 
 <div class="filter-bar">
@@ -349,7 +485,8 @@ body {{ font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; backgro
         <option value="USA">USA</option>
         <option value="UK">UK</option>
         <option value="Europe">Europe</option>
-        <option value="international">International</option>
+        <option value="Asia-Pacific">Asia-Pacific</option>
+        <option value="International">International</option>
       </select>
     </div>
   </div>
@@ -367,6 +504,11 @@ body {{ font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; backgro
     <button class="modal-close" id="modal-close" aria-label="Close">&times;</button>
     <div class="modal-body" id="modal-body"></div>
   </div>
+</div>
+
+<div class="page-footer">
+  PRISM &mdash; Partnership for Research Into Sentient Machines &middot; Survey date: March 2026 &middot;
+  Corpus version 1.0 &middot; {org_count} included organisations
 </div>
 
 <script>
@@ -392,7 +534,7 @@ function renderCards() {{
   let visible = 0;
   document.querySelectorAll('.card').forEach(card => {{
     const typeOk = !activeType || card.dataset.type === activeType;
-    const geoOk  = !activeGeo  || card.dataset.geo  === activeGeo;
+    const geoOk  = !activeGeo  || card.dataset.geoRegion === activeGeo;
     const filterOk = matchesFilter(card);
     const searchOk = !q || card.dataset.search.includes(q);
     const show = filterOk && typeOk && geoOk && searchOk;
@@ -417,7 +559,8 @@ function buildGrid() {{
     card.dataset.subgroup = o.subgroup || '';
     card.dataset.type = o.type;
     card.dataset.geo  = o.geography;
-    card.dataset.search = (o.name + ' ' + o.description + ' ' + o.geography).toLowerCase();
+    card.dataset.geoRegion = o.geo_region;
+    card.dataset.search = (o.name + ' ' + o.description + ' ' + o.geography + ' ' + (o.key_figures || '')).toLowerCase();
 
     const accentZone = o.zone || (o.subgroup ? '' : '');
     if (o.subgroup) card.dataset.subgroup = o.subgroup;
@@ -432,8 +575,7 @@ function buildGrid() {{
       : '';
 
     const typeBadge = `<span class="type-badge">${{o.type_label}}</span>`;
-    const metaParts = [o.geography, o.founding_year !== 'unknown' ? o.founding_year : ''].filter(Boolean);
-    const metaText = metaParts.length ? `<span class="meta-sep">·</span> ${{metaParts.join(' · ')}}` : '';
+    const metaText = o.geography ? `<span class="meta-sep">&middot;</span> ${{o.geography}}` : '';
 
     card.innerHTML = `
       <div class="card-header">
@@ -447,7 +589,7 @@ function buildGrid() {{
       <div class="card-meta">${{typeBadge}}${{metaText}}</div>
       <div class="card-description">${{o.description}}</div>
       <div class="card-footer">
-        <a class="card-link" href="${{o.url}}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Visit →</a>
+        <a class="card-link" href="${{o.url}}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Visit &rarr;</a>
       </div>
     `;
 
@@ -468,19 +610,59 @@ function openModal(o) {{
   const body  = document.getElementById('modal-body');
   const zoneLabel  = ZONE_LABELS[o.zone] || ZONE_LABELS[o.subgroup] || '';
   const alsoLabel  = o.zone_secondary ? ` · also: ${{ZONE_LABELS[o.zone_secondary] || o.zone_secondary}}` : '';
-  const accentVar  = o.zone ? `var(--${{o.zone.replace(/-/g,'')
-    .replace('consciousnessscience','z1').replace('philosophyofmind','z2')
-    .replace('aiconsciousnesswelfare','z3').replace('animalsentience','z4')
-    .replace('ailabprograms','z5').replace('policygovernance','z6')}},var(--z3))` : 'var(--z3)';
 
-  // Compute accent colour class for modal top border
-  const zoneClass = o.zone || o.subgroup || '';
-  modal.style.setProperty('--card-accent', getComputedStyle(document.querySelector(`[data-zone="${{o.zone}}"], [data-subgroup="${{o.subgroup}}"]`) || document.body).getPropertyValue('--card-accent') || 'var(--border)');
+  // Compute accent colour for modal top border
+  const src = document.querySelector(`[data-zone="${{o.zone}}"], [data-subgroup="${{o.subgroup}}"]`);
+  if (src) {{
+    modal.style.setProperty('--card-accent', getComputedStyle(src).getPropertyValue('--card-accent'));
+  }}
 
   const logoHtml = o.logo_slug
     ? `<img class="modal-logo" src="logos/${{o.logo_slug}}.png" alt="${{o.name}}" onerror="this.style.display='none'">`
     : '';
-  const year = o.founding_year !== 'unknown' ? o.founding_year : 'Unknown';
+  // Parse pipe-delimited links: "Text|URL" or just "Text"
+  function linkify(text, url) {{
+    return url ? `<a href="${{url}}" target="_blank" rel="noopener">${{text}}</a>` : text;
+  }}
+
+  const peopleHtml = o.key_figures
+    ? `<div class="modal-section">
+        <div class="modal-section-label">People</div>
+        <ul class="modal-section-list">
+          ${{o.key_figures.split(';').map(s => {{
+            const t = s.trim();
+            // Split on last pipe to get URL if present
+            const pipeIdx = t.lastIndexOf('|');
+            const entry = pipeIdx > -1 ? t.substring(0, pipeIdx).trim() : t;
+            const url = pipeIdx > -1 ? t.substring(pipeIdx + 1).trim() : '';
+            const m = entry.match(/^(.+?)\\s*\\((.+)\\)$/);
+            if (m) {{
+              const nameHtml = url ? `<a href="${{url}}" target="_blank" rel="noopener">${{m[1]}}</a>` : m[1];
+              return `<li><strong>${{nameHtml}}</strong>, ${{m[2]}}</li>`;
+            }}
+            return `<li>${{url ? `<a href="${{url}}" target="_blank" rel="noopener">${{entry}}</a>` : entry}}</li>`;
+          }}).join('')}}
+        </ul>
+      </div>`
+    : '';
+
+  const outputsHtml = o.key_outputs
+    ? `<div class="modal-section">
+        <div class="modal-section-label">Selected research</div>
+        <ul class="modal-section-list modal-citations">
+          ${{o.key_outputs.split(';').map(s => {{
+            const t = s.trim();
+            const pipeIdx = t.lastIndexOf('|');
+            if (pipeIdx > -1) {{
+              const text = t.substring(0, pipeIdx).trim();
+              const url = t.substring(pipeIdx + 1).trim();
+              return `<li><a href="${{url}}" target="_blank" rel="noopener">${{text}}</a></li>`;
+            }}
+            return `<li>${{t}}</li>`;
+          }}).join('')}}
+        </ul>
+      </div>`
+    : '';
 
   body.innerHTML = `
     ${{logoHtml}}
@@ -490,9 +672,10 @@ function openModal(o) {{
     <table class="modal-meta-table">
       <tr><td>Type</td><td>${{o.type_label}}</td></tr>
       <tr><td>Geography</td><td>${{o.geography}}</td></tr>
-      <tr><td>Founded</td><td>${{year}}</td></tr>
     </table>
-    <a class="modal-link" href="${{o.url}}" target="_blank" rel="noopener">Visit website →</a>
+    ${{peopleHtml}}
+    ${{outputsHtml}}
+    <a class="modal-link" href="${{o.url}}" target="_blank" rel="noopener">Visit website &rarr;</a>
   `;
 
   document.getElementById('modal-backdrop').classList.add('open');
@@ -545,4 +728,4 @@ with open(out_path, 'w') as f:
     f.write(HTML)
 
 size = os.path.getsize(out_path)
-print(f"Written: {out_path} ({size:,} bytes, {len(orgs)} orgs)")
+print(f"Written: {out_path} ({size:,} bytes, {org_count} orgs)")
