@@ -35,7 +35,7 @@ def subgroup(row):
         return ''
     if row['org_type'].strip() == 'funding-body':
         return 'funders'
-    if row['function'].strip() == 'community-onboarding' and row['org_type'].strip() == 'nonprofit':
+    if row['function'].strip() == 'community-onboarding':
         return 'onboarding'
     if row['org_name'].strip() in JOURNALS:
         return 'journals'
