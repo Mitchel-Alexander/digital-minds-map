@@ -121,27 +121,20 @@ org_count = len(orgs)
 # Zone / subgroup metadata
 # ---------------------------------------------------------------------------
 ZONES = [
-    ('ai-consciousness-welfare', 'Digital Minds & AI Consciousness',
-     'The field\'s core: organisations explicitly focused on AI consciousness, AI moral status, '
-     'and digital minds as an applied research agenda.'),
-    ('consciousness-science',    'Consciousness Science',
-     'Organisations whose primary home is the empirical and theoretical science of consciousness. '
-     'Work on neural correlates, global workspace, and integrated information provides direct '
-     'empirical grounding for AI consciousness debates.'),
-    ('philosophy-of-mind',       'Philosophy of Mind',
-     'Academic philosophers working on consciousness, phenomenology, and the nature of mind, '
-     'supplying the conceptual and analytical foundations on which digital minds questions rest.'),
-    ('ai-lab-programs',          'AI Lab Programmes',
-     'Internal research programmes within frontier AI labs working on consciousness, model welfare, '
-     'or interpretability with direct relevance to questions of AI sentience.'),
-    ('ethics-law-moral-status',  'Ethics, Law & Moral Status',
-     'Research groups and organisations whose primary contribution is normative, legal, or philosophical '
-     'analysis of AI moral status, personhood, and legal standing. Eligibility requires published work '
-     'directly engaging AI consciousness, sentience, or moral status.'),
-    ('policy-governance',        'Policy & Governance',
-     'Government bodies, regulatory agencies, and governance-focused organisations engaging with '
-     'digital minds questions in policy and regulatory contexts. Distinct from normative scholarship: '
-     'this zone covers institutions with formal or quasi-formal governance roles.'),
+    ('digital-minds',            'Digital Minds Research',
+     'Organisations whose primary mission is AI consciousness, AI welfare, or digital minds '
+     'as an applied research agenda.'),
+    ('empirical-foundations',    'Empirical Foundations',
+     'Consciousness science laboratories and research groups providing the empirical and theoretical '
+     'evidence base — work on neural correlates, global workspace theory, integrated information, '
+     'and related frameworks that ground AI consciousness assessment.'),
+    ('philosophical-foundations', 'Philosophical Foundations',
+     'Academic centres working on philosophy of mind, moral status theory, and the conceptual '
+     'frameworks on which digital minds questions rest — from phenomenology and higher-order '
+     'theories to practical ethics of AI moral patiency.'),
+    ('governance-advocacy',      'Governance & Advocacy',
+     'Organisations whose primary contribution is translating digital minds research into policy, '
+     'legal frameworks, rights advocacy, or governance practice.'),
 ]
 
 SUBGROUPS = [
@@ -183,7 +176,7 @@ tab_rows_html = ''
 tab_rows_html += '    <div class="tab-row">\n'
 tab_rows_html += '      <span class="tab-row-label">Research</span>\n'
 for filt, label, _ in ZONES:
-    active = ' active' if filt == 'ai-consciousness-welfare' else ''
+    active = ' active' if filt == 'digital-minds' else ''
     escaped_label = label.replace('&', '&amp;')
     tab_rows_html += f'      <span class="zone-tab{active}" data-filter="{filt}">{escaped_label}</span>\n'
 tab_rows_html += '    </div>\n'
@@ -194,6 +187,79 @@ tab_rows_html += '      <span class="tab-row-label">Field Support</span>\n'
 for filt, label, _ in SUBGROUPS:
     tab_rows_html += f'      <span class="zone-tab" data-filter="{filt}">{label}</span>\n'
 tab_rows_html += '    </div>\n'
+
+FIELD_MAP_SVG = '''
+<div style="text-align: center; margin: 0.5rem auto; max-width: 560px;">
+  <svg viewBox="0 0 600 580" xmlns="http://www.w3.org/2000/svg" style="width: 100%%; height: auto; font-family: 'Inter', system-ui, sans-serif;">
+    <defs>
+      <style>
+        .ring-label {{ font-size: 11px; font-weight: 600; letter-spacing: 0.03em; }}
+        .ring-count {{ font-size: 9.5px; font-weight: 400; opacity: 0.75; }}
+        .sub-label {{ font-size: 10px; font-weight: 600; }}
+        .sub-count {{ font-size: 8.5px; font-weight: 400; opacity: 0.7; }}
+        .core-q {{ font-size: 7px; font-weight: 400; fill: #ffffff; opacity: 0.85; }}
+        .caption-text {{ font-size: 9px; fill: #4a6070; }}
+      </style>
+    </defs>
+
+    <!-- Title -->
+    <text x="300" y="24" text-anchor="middle" style="font-size:14px;font-weight:700;fill:#0f1f2e;">Field Structure</text>
+    <text x="300" y="40" text-anchor="middle" style="font-size:10px;font-weight:400;fill:#4a6070;">Proximity to the core question of AI consciousness and moral status</text>
+
+    <!-- Outer ring: Foundations -->
+    <circle cx="300" cy="280" r="220" fill="none" stroke="#e2e8f0" stroke-width="0.5" />
+    <circle cx="300" cy="280" r="155" fill="none" stroke="#e2e8f0" stroke-width="0.5" />
+    <!-- Empirical half (left) -->
+    <path d="M 300 60 A 220 220 0 0 0 300 500 L 300 435 A 155 155 0 0 1 300 125 Z"
+          fill="#1d6fa4" opacity="0.10" />
+    <!-- Philosophical half (right) -->
+    <path d="M 300 60 A 220 220 0 0 1 300 500 L 300 435 A 155 155 0 0 0 300 125 Z"
+          fill="#4a6fa5" opacity="0.10" />
+    <!-- Labels -->
+    <text x="148" y="273" text-anchor="middle" class="ring-label" fill="#1d6fa4">Empirical</text>
+    <text x="148" y="286" text-anchor="middle" class="ring-label" fill="#1d6fa4">Foundations</text>
+    <text x="148" y="299" text-anchor="middle" class="ring-count" fill="#1d6fa4">19 organisations</text>
+    <text x="452" y="273" text-anchor="middle" class="ring-label" fill="#4a6fa5">Philosophical</text>
+    <text x="452" y="286" text-anchor="middle" class="ring-label" fill="#4a6fa5">Foundations</text>
+    <text x="452" y="299" text-anchor="middle" class="ring-count" fill="#4a6fa5">8 organisations</text>
+    <line x1="300" y1="63" x2="300" y2="123" stroke="#cbd5e1" stroke-width="0.5" stroke-dasharray="2,2" />
+    <line x1="300" y1="437" x2="300" y2="497" stroke="#cbd5e1" stroke-width="0.5" stroke-dasharray="2,2" />
+
+    <!-- Middle ring: Governance & Advocacy -->
+    <circle cx="300" cy="280" r="155" fill="#4a5a72" opacity="0.08" />
+    <circle cx="300" cy="280" r="105" fill="none" stroke="#cbd5e1" stroke-width="0.5" />
+    <text x="300" y="142" text-anchor="middle" class="sub-label" fill="#4a5a72">Governance &amp; Advocacy</text>
+    <text x="300" y="155" text-anchor="middle" class="sub-count" fill="#4a5a72">4 organisations</text>
+
+    <!-- Inner ring: Core -->
+    <circle cx="300" cy="280" r="105" fill="#1a5f7a" opacity="0.12" />
+    <circle cx="300" cy="280" r="105" fill="none" stroke="#1a5f7a" stroke-width="1.5" opacity="0.4" />
+    <text x="300" y="252" text-anchor="middle" style="font-size:13px;font-weight:600;fill:#1a5f7a;">Digital Minds</text>
+    <text x="300" y="267" text-anchor="middle" style="font-size:13px;font-weight:600;fill:#1a5f7a;">Research</text>
+    <text x="300" y="283" text-anchor="middle" style="font-size:10px;fill:#1a5f7a;opacity:0.75;">22 organisations</text>
+
+    <!-- Central question -->
+    <circle cx="300" cy="322" r="36" fill="#1a5f7a" opacity="0.85" />
+    <text x="300" y="316" text-anchor="middle" class="core-q">Could AI systems</text>
+    <text x="300" y="325" text-anchor="middle" class="core-q">be conscious, and what</text>
+    <text x="300" y="334" text-anchor="middle" class="core-q">follows from that?</text>
+
+    <!-- Caption -->
+    <text x="300" y="532" text-anchor="middle" class="caption-text">
+      Three rings represent proximity to the central question. The inner ring contains organisations
+    </text>
+    <text x="300" y="545" text-anchor="middle" class="caption-text">
+      whose primary mission addresses AI consciousness and welfare directly.
+    </text>
+    <text x="300" y="558" text-anchor="middle" class="caption-text">
+      Outer rings map governance and the foundational science and philosophy that inform the field.
+    </text>
+    <text x="300" y="574" text-anchor="middle" class="caption-text" style="font-style:italic;opacity:0.6;">
+      53 research organisations across 4 categories · March 2026
+    </text>
+  </svg>
+</div>
+'''
 
 HTML = f"""<!DOCTYPE html>
 <html lang="en">
@@ -209,8 +275,8 @@ HTML = f"""<!DOCTYPE html>
 :root {{
   --bg:#f0f4f8; --surface:#ffffff; --border:#d6e0ea;
   --text:#0f1f2e; --muted:#4a6070; --faint:#8fa4b8;
-  --z1:#1d6fa4; --z2:#4a6fa5; --z3:#1a5f7a;
-  --z4:#5a7fa0; --z5:#2d4a6b; --z6:#1e3a5f; --z7:#4a5a72;
+  --z-core:#1a5f7a; --z-empirical:#1d6fa4; --z-philosophical:#4a6fa5;
+  --z-governance:#4a5a72;
   --sg-funders:#1d5c9a; --sg-onboarding:#1a7060; --sg-journals:#4a5a9a; --sg-media:#607a90;
   --accent-warm:#8a5a3a;
 }}
@@ -281,12 +347,10 @@ body {{ font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; backgro
 }}
 .zone-tab:hover {{ color:var(--text); }}
 .zone-tab.active {{ color:var(--text); font-weight:600; border-bottom-color:var(--text); }}
-.zone-tab[data-filter="consciousness-science"].active    {{ border-bottom-color:var(--z1); color:var(--z1); }}
-.zone-tab[data-filter="philosophy-of-mind"].active       {{ border-bottom-color:var(--z2); color:var(--z2); }}
-.zone-tab[data-filter="ai-consciousness-welfare"].active {{ border-bottom-color:var(--z3); color:var(--z3); }}
-.zone-tab[data-filter="ai-lab-programs"].active          {{ border-bottom-color:var(--z5); color:var(--z5); }}
-.zone-tab[data-filter="ethics-law-moral-status"].active  {{ border-bottom-color:var(--z7); color:var(--z7); }}
-.zone-tab[data-filter="policy-governance"].active        {{ border-bottom-color:var(--z6); color:var(--z6); }}
+.zone-tab[data-filter="digital-minds"].active       {{ border-bottom-color:var(--z-core); color:var(--z-core); }}
+.zone-tab[data-filter="empirical-foundations"].active    {{ border-bottom-color:var(--z-empirical); color:var(--z-empirical); }}
+.zone-tab[data-filter="philosophical-foundations"].active {{ border-bottom-color:var(--z-philosophical); color:var(--z-philosophical); }}
+.zone-tab[data-filter="governance-advocacy"].active      {{ border-bottom-color:var(--z-governance); color:var(--z-governance); }}
 .zone-tab[data-filter="funders"].active     {{ border-bottom-color:var(--sg-funders);    color:var(--sg-funders); }}
 .zone-tab[data-filter="onboarding"].active  {{ border-bottom-color:var(--sg-onboarding); color:var(--sg-onboarding); }}
 .zone-tab[data-filter="journals"].active    {{ border-bottom-color:var(--sg-journals);   color:var(--sg-journals); }}
@@ -326,12 +390,10 @@ body {{ font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; backgro
   border-top:3px solid var(--card-accent,var(--border));
 }}
 .card:hover {{ background:#f7fafd; }}
-.card[data-zone="consciousness-science"]    {{ --card-accent:var(--z1); }}
-.card[data-zone="philosophy-of-mind"]       {{ --card-accent:var(--z2); }}
-.card[data-zone="ai-consciousness-welfare"] {{ --card-accent:var(--z3); }}
-.card[data-zone="ai-lab-programs"]          {{ --card-accent:var(--z5); }}
-.card[data-zone="ethics-law-moral-status"]  {{ --card-accent:var(--z7); }}
-.card[data-zone="policy-governance"]        {{ --card-accent:var(--z6); }}
+.card[data-zone="digital-minds"]        {{ --card-accent:var(--z-core); }}
+.card[data-zone="empirical-foundations"]     {{ --card-accent:var(--z-empirical); }}
+.card[data-zone="philosophical-foundations"] {{ --card-accent:var(--z-philosophical); }}
+.card[data-zone="governance-advocacy"]      {{ --card-accent:var(--z-governance); }}
 .card[data-subgroup="funders"]       {{ --card-accent:var(--sg-funders); }}
 .card[data-subgroup="onboarding"]    {{ --card-accent:var(--sg-onboarding); }}
 .card[data-subgroup="journals"]      {{ --card-accent:var(--sg-journals); }}
@@ -343,7 +405,7 @@ body {{ font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; backgro
   padding:1px 5px; margin-top:2px;
 }}
 
-.card-banner {{ width:100%; height:75px; object-fit:contain; opacity:.85; margin-bottom:8px; mix-blend-mode:multiply; }}
+.card-banner {{ width:100%; height:75px; object-fit:contain; opacity:.85; margin-bottom:8px; mix-blend-mode:multiply; filter:grayscale(100%) sepia(40%) hue-rotate(190deg) saturate(180%); }}
 .card-header {{ display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }}
 .card-header-left {{ flex:1; min-width:0; }}
 .card-name {{ font-size:13px; font-weight:600; color:var(--text); line-height:1.3; letter-spacing:-0.01em; }}
@@ -378,7 +440,7 @@ body {{ font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; backgro
 .modal-close:hover {{ color:var(--text); }}
 .modal-org-name {{ font-size:17px; font-weight:600; letter-spacing:-0.02em; color:var(--text); margin-bottom:4px; }}
 .modal-zone {{ font-size:10px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--card-accent,var(--faint)); margin-bottom:16px; }}
-.modal-logo {{ width:100%; max-width:280px; height:90px; object-fit:contain; opacity:.85; margin-bottom:16px; display:block; mix-blend-mode:multiply; }}
+.modal-logo {{ width:100%; max-width:280px; height:90px; object-fit:contain; opacity:.85; margin-bottom:16px; display:block; mix-blend-mode:multiply; filter:grayscale(100%) sepia(40%) hue-rotate(190deg) saturate(180%); }}
 .modal-description {{ font-size:13px; color:var(--muted); line-height:1.7; font-weight:300; margin-bottom:20px; }}
 .modal-meta-table {{ width:100%; border-collapse:collapse; font-size:12px; }}
 .modal-meta-table td {{ padding:5px 0; vertical-align:top; }}
@@ -424,7 +486,7 @@ body {{ font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; backgro
     This directory maps the organisational actors in the digital minds field &mdash; the interdisciplinary space
     concerned with whether AI systems might be conscious, sentient, or moral patients, and what follows from that.
     It covers research centres, university groups, AI lab programmes, funding bodies, training programmes, and
-    community organisations, organised into six research zones and four field-support categories.
+    community organisations, organised into four research categories and four field-support categories.
   </p>
   <p class="attribution">
     Produced by <strong>PRISM</strong> &mdash; Partnership for Research Into Sentient Machines.
@@ -444,16 +506,23 @@ body {{ font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; backgro
         with rationale). Only included organisations appear in this directory.
       </p>
       <p>
-        Organisations are assigned to one of six topical zones based on primary research focus, or to a
-        field-support category (funders, training, journals, community). Funding bodies must demonstrate
-        confirmed grantmaking in digital minds research, not merely declared interest. Individual researchers
-        without institutional anchors are excluded.
+        Organisations are assigned to one of four research categories &mdash; core digital minds research,
+        empirical foundations, philosophical foundations, and governance &amp; advocacy &mdash; or to a
+        field-support category (funders, training, journals, community). Some organisations appear in more
+        than one category where their work genuinely spans boundaries. Funding bodies must demonstrate
+        confirmed grantmaking in digital minds research, not merely declared interest.
       </p>
       <p class="method-note">
         Limitations: search conducted primarily in English; non-English-language sources not systematically covered;
         private companies without public research output may exist below the visibility threshold. The full
         methodology protocol and decision log are available in the accompanying dataset.
       </p>
+    </div>
+  </details>
+  <details class="panel">
+    <summary>Field structure</summary>
+    <div class="panel-body">
+{FIELD_MAP_SVG}
     </div>
   </details>
 </div>
@@ -510,7 +579,7 @@ const ORGS = {orgs_json};
 const ZONE_LABELS = {json.dumps(ZONE_LABELS, ensure_ascii=False)};
 const ZONE_DESCS  = {zone_descs_json};
 
-let activeFilter = 'ai-consciousness-welfare';
+let activeFilter = 'digital-minds';
 let activeType   = '';
 let activeGeo    = '';
 let searchQuery  = '';
